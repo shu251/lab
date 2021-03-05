@@ -1,0 +1,114 @@
+---
+title: "Functions for lab"
+author: "Sarah Hu"
+date: "3/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# RNA extractions
+
+Qiagen RNA extraction protocol.
+```{r}
+rlt_beta <- function(sample_num, buffer_ml){
+  total_needed <- sample_num * buffer_ml
+  cat("You need", total_needed, "mLs of RLT buffer.\n")
+  beta <- (total_needed * 20)
+  cat("Prep RLT by adding", beta, "µl of beta-mercaptoethanol to", total_needed, "mL of RLT.")
+}
+# rlt_beta(3, 1)
+```
+
+```{r}
+# CV=CV EtOH
+# Assumes you start with 100% EtOH
+etoh <- function(ml, percent){
+  vol_etoh <- (ml*(percent/100))/1
+  vol_h20 <- ml - vol_etoh
+  cat("Prep", percent, "EtOH by adding", vol_h20, "ml water +", vol_etoh, "ml of 100% ethanol.")
+}
+# etoh(10, 70)
+```
+
+
+```{r}
+DNase <- function(sample_num, error){
+  rw1 <- 350 * (sample_num + error)
+  dnaseI <- 10 * (sample_num + error)
+  total <- (rw1 + dnaseI)
+  cat("Combine", rw1, "µl of RW1 buffer, with", dnaseI, "µl of DNase I enzyme.\n")
+  cat("This is enough master mix for", sample_num, "samples, and totals to", 
+      total, "µls in volume. Add 80 µl to each RNase column membrane.")
+}
+# DNase(10, 0.1)
+```
+
+
+# Sequencing calculations
+
+Was sequencing budget given in Gb of base pairs?
+```{r}
+Gb_to_readpair <- function(Gb, ended, length){
+  # Gb == billion bps per lane
+  # ended * length = total bps
+  readpair <- (((Gb * 1E9)/(ended * length)))/1E9
+  cat("With", Gb ,"billion bps and", length, paste(ifelse(ended == 1, "SE", "PE")), "sequencing, run will give",readpair, "billion", paste(ifelse(ended == 1, "SE", "PE")), "reads per lane.")
+}
+
+Gb_to_readpair(2400, 2, 150)
+```
+
+Coverage depth refers to the average number of sequencing reads that align to, or "cover," each base in your sequenced sample. The Lander/Waterman equation1 is a method for calculating coverage (C) based on your read length (L), number of reads (N), and haploid genome length (G): C = LN / G
+```{r}
+# ended 1 = SE and 2 = PE
+# length = length of read (e.g., 100 or 150) in bps
+# genome_length = effective genome size (total) in Gb
+# coverage = number of times you want to sequence over the genome
+coverage_depth_est <- function(length, ended, genome_length, coverage){
+  # coverage = (read length * number of reads)/genome length
+  est_num <- (length*ended) * genome_length * coverage
+  cat("To get", coverage, "x coverage, you need at least", est_num, "reads.")
+}
+# If I want 100X coverage, how many reads do I need to get?
+coverage_depth_est(150, 2, 200, 100)
+```
+
+
+```{r}
+# million_user = million read pairs a user wants (if you want 50M read pairs coverage, use '50')
+# ended 1 = SE and 2 = PE
+# length = length of read (e.g., 100 or 150)
+# sample_num = samples you want to sequence
+# billion_seq = billion read pairs available in 1 lane of sequencing (1 billion, use '1')
+# lanes = number of lanes
+
+seq_calc <- function(million_user, ended, length, sample_num, billion_seq, lanes, machine){
+  cat("Sequencing target:\n")
+  cat("I want", million_user, "Million read pairs for", sample_num, "total samples.\n")
+  sample_bps <- ((million_user * 1E6) * (ended * length)) # Bps per sample user wants
+  cat("Therefore, the total bps desired per sample =", sample_bps, "bps\n")
+  total_readpairs <- ((million_user * 1E6) * sample_num)
+  total_bps <- (sample_bps * sample_num)
+  cat("For", sample_num, "samples, that totals to", total_bps, "bps need to be sequenced, to get my desired coverage. That's", total_readpairs," total read pairs.\n\n")
+  ##
+  cat("Available sequencing:\n")
+  avail <- (billion_seq * 1E9) # Read pairs available
+  cat(machine, "sequencing can give me", avail, "reads per lane (", billion_seq,"billion read pairs ).\n","Which comes out to", avail*lanes, "total reads across", lanes, "lanes.\n\n")
+  samples_avail <- (billion_seq * 1E9)/(million_user * 1E6)
+  ##
+  cat("Possible sequence analysis:\n")
+  cat("I can then target", samples_avail, "samples, to get approximately", million_user, "Million reads per sample per lane.\n")
+  cat("Across", lanes, "total lanes, I can get", (samples_avail * lanes), "samples.\n")
+  ## $
+  need_lanes <- (million_user * 1E6)/(billion_seq * 1E9)
+  cat("Since you have", sample_num, "samples to get sequenced, you need to budget for at least", sample_num/samples_avail, "( or", round((sample_num/samples_avail),0),")",machine, "lanes.\n\n")
+  ##
+  cat("Build budget to cover library prep and QC for",sample_num,"samples and", round((sample_num/samples_avail),0), machine, "lanes.")
+}
+# seq_calc(80, 2, 150, 20, 2, 4, "NovaSeq")
+seq_calc(100, 2, 150, 20, 2, 4, "NovaSeq")
+seq_calc(200, 2, 150, 58, 2, 4, "NovaSeq")
+```
