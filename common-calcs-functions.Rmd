@@ -19,7 +19,7 @@ rlt_beta <- function(sample_num, buffer_ml){
   beta <- (total_needed * 20)
   cat("Prep RLT by adding", beta, "µl of beta-mercaptoethanol to", total_needed, "mL of RLT.")
 }
-# rlt_beta(3, 1)
+rlt_beta(3, 2)
 ```
 
 ```{r}
@@ -28,22 +28,23 @@ rlt_beta <- function(sample_num, buffer_ml){
 etoh <- function(ml, percent){
   vol_etoh <- (ml*(percent/100))/1
   vol_h20 <- ml - vol_etoh
-  cat("Prep", percent, "EtOH by adding", vol_h20, "ml water +", vol_etoh, "ml of 100% ethanol.")
+  cat("Prep", percent, "% EtOH by adding", vol_h20, "ml water +", vol_etoh, "ml of 100% ethanol.")
 }
-# etoh(10, 70)
+etoh(13, 70)
 ```
 
 
 ```{r}
 DNase <- function(sample_num, error){
-  rw1 <- 350 * (sample_num + error)
+  RDD <- 70 * (sample_num + error)
   dnaseI <- 10 * (sample_num + error)
-  total <- (rw1 + dnaseI)
-  cat("Combine", rw1, "µl of RW1 buffer, with", dnaseI, "µl of DNase I enzyme.\n")
+  total <- (RDD + dnaseI)
+  cat("Combine", RDD, "µl of RDD buffer, with", dnaseI, "µl of DNase I enzyme.\n")
   cat("This is enough master mix for", sample_num, "samples, and totals to", 
       total, "µls in volume. Add 80 µl to each RNase column membrane.")
 }
-# DNase(10, 0.1)
+DNase(8, 0.1)
+# 488/6
 ```
 
 
