@@ -16,10 +16,12 @@ Qiagen RNA extraction protocol.
 rlt_beta <- function(sample_num, buffer_ml){
   total_needed <- sample_num * buffer_ml
   cat("You need", total_needed, "mLs of RLT buffer.\n")
-  beta <- (total_needed * 20)
+  beta <- (total_needed * 10)
   cat("Prep RLT by adding", beta, "µl of beta-mercaptoethanol to", total_needed, "mL of RLT.")
 }
-rlt_beta(3, 2)
+rlt_beta(4, 1)
+# 1.5 * 8
+# 5+8
 ```
 
 ```{r}
@@ -30,7 +32,7 @@ etoh <- function(ml, percent){
   vol_h20 <- ml - vol_etoh
   cat("Prep", percent, "% EtOH by adding", vol_h20, "ml water +", vol_etoh, "ml of 100% ethanol.")
 }
-etoh(13, 70)
+etoh(5, 70)
 ```
 
 
@@ -46,6 +48,28 @@ DNase <- function(sample_num, error){
 DNase(8, 0.1)
 # 488/6
 ```
+
+
+# RNA quantification
+How much 1X TE would you need total?
+```{r}
+TE_total <- function(sample_num){
+  stdcurve_num <- 8
+  totalwells <- sample_num + stdcurve_num
+  cat("With 8 wells designated for the standard curve, and", sample_num, "samples, account for", totalwells, "wells on the plate. And 1999 µl for making Ribogreen mixture.\n")
+  ribo <- 2000 #2ml of Ribogreen
+  ul_total <- ((totalwells * 50) + ribo)
+  cat("Make", ul_total, "µl of 1X TE, or", (ul_total/1000), "mls.\n\n")
+  tomake_mls <- ceiling(ul_total/1000)
+  ml2 <- (tomake_mls/2)
+  ml1 <- (tomake_mls/1)
+  cat("Option 1: Make", ml1, "total solutions of 1X TE in 1ml aliquots:\n50µl of 20X TE + 950µl water. Repeat",ml1,"times.\n\n\n")
+  cat("Option2: Make", ml2, "total solutions of 1X TE in 2ml aliquots:\n100µl of 20X TE + 1900µl water. Repeat",ml2,"times.\n")
+}
+TE_total(16)
+# 2000/20
+```
+
 
 
 # Sequencing calculations
