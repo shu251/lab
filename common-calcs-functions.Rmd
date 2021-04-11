@@ -70,6 +70,27 @@ TE_total(16)
 # 2000/20
 ```
 
+# cDNA calculation
+This is based on the iScript Select cDNA synthesis step from BioRad.
+```{r}
+cDNA_mix <- function(sample_num, err, desired_conc){
+  cat("With", sample_num, "samples for cDNA. Make this master mix:\n")
+  sample_num_werr <- (sample_num + (sample_num * err))
+  rxn_mix5x <- (4 * sample_num_werr)
+  rt <- (1 * sample_num_werr)
+  primer <- (2 * sample_num_werr)
+  cat("5X IScript rev rxn mix:", rxn_mix5x, "µl\n")
+  cat("iScript RT enzyme:", rt, "µl\n")
+  cat("Random primers:", primer, "µl\n\n")
+  total_vol <- rxn_mix5x + rt + primer
+  cat("Total vol of master mix is", total_vol, "µl.\n",
+      "Add 7µl to each tube. Add RNA and water to 20µl.")
+  # CV=CV
+}
+
+cDNA_mix(15, 0.1)
+```
+
 
 
 # Sequencing calculations
