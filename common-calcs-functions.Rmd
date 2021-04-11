@@ -88,10 +88,36 @@ cDNA_mix <- function(sample_num, err, desired_conc){
   # CV=CV
 }
 
-cDNA_mix(15, 0.1)
+cDNA_mix(11, 0.01) #0.01 = 1% error
 ```
 
+# PCR reaction calculation
+This is based on the Q5 High-Fidelity 2X Master Mix from BioRad.
+Assumes that final volume of reaction is 25µl and the input concentration of primers is 10µM.
+```{r}
+PCR_master_mix <- function(sample_num, err, desired_conc, desired_vol){
+  sample_num_werr <- (sample_num + (sample_num * err))
+  rxn_mixQ5 <- (12.5 * sample_num_werr)
+  primer <- (1.25 * sample_num_werr)
+  vol_water <- (sample_num_werr * (10-desired_vol))
+  input_template_conc <- ((desired_conc/25) * 25)/desired_vol
+  cat("Solve for input DNA template concentration:\n")
+  cat("(C)(V) =", (desired_conc/25) * 25, "ng\n")
+  cat("To add", desired_vol, "µl to all PCR reactions, make sure input DNA template has a concentration of", input_template_conc, "µl.\n\n")
+  cat("To prep for", sample_num, "PCR reactions. Make this master mix:\n")
+  cat("Q5 Hi-Fi 2X Mix:", rxn_mixQ5, "µl\n")
+  cat("Forward primer (10µM):", primer, "µl\n")
+  cat("Reverse primer (10µM):", primer, "µl\n")
+  cat("Nuclease-free water:", vol_water,"µl\n")
+  cat("*Add above water to master mix if all DNA inputs are normalized to add", desired_vol, "µl of template.\n")
+  each_tube <- (12.5 + 1.25 + 1.25 + (10-desired_vol))
+  cat("Prep each tube by adding", each_tube,"µl of master mix, and", desired_vol, "µl of DNA template.\n\n")
+  cat("Otherwise, add 15µl of master mix to each tube. Then add 10µl total of water and input template DNA so total reaction volume is 25µl\n\n")
+  # CV=CV
+}
 
+PCR_master_mix(12, 0.01, 1, 5) #0.01 = 1% error
+```
 
 # Sequencing calculations
 
