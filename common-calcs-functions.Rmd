@@ -19,7 +19,7 @@ rlt_beta <- function(sample_num, buffer_ml){
   beta <- (total_needed * 10)
   cat("Prep RLT by adding", beta, "µl of beta-mercaptoethanol to", total_needed, "mL of RLT.")
 }
-rlt_beta(4, 1)
+rlt_beta(8, 1)
 # 1.5 * 8
 # 5+8
 ```
@@ -32,7 +32,7 @@ etoh <- function(ml, percent){
   vol_h20 <- ml - vol_etoh
   cat("Prep", percent, "% EtOH by adding", vol_h20, "ml water +", vol_etoh, "ml of 100% ethanol.")
 }
-etoh(5, 70)
+etoh(10, 70)
 ```
 
 
@@ -45,8 +45,10 @@ DNase <- function(sample_num, error){
   cat("This is enough master mix for", sample_num, "samples, and totals to", 
       total, "µls in volume. Add 80 µl to each RNase column membrane.")
 }
-DNase(8, 0.1)
+DNase(6, 0.01)
 # 488/6
+
+550/81
 ```
 
 
@@ -88,7 +90,11 @@ cDNA_mix <- function(sample_num, err, desired_conc){
   # CV=CV
 }
 
-cDNA_mix(11, 0.01) #0.01 = 1% error
+cDNA_mix(7.1, 0.0) #0.01 = 1% error
+
+4*17.5
+1*17.5
+2*17.5
 ```
 
 # PCR reaction calculation
@@ -116,8 +122,39 @@ PCR_master_mix <- function(sample_num, err, desired_conc, desired_vol){
   # CV=CV
 }
 
-PCR_master_mix(12, 0.01, 1, 5) #0.01 = 1% error
+PCR_master_mix(18, 0.01, 1, 5) #0.01 = 1% error
 ```
+
+Prep gel and PCR products to run.
+```{r}
+# perc_agarose - for 1% input 0.01
+# function automatically adds 2 samples for error
+
+run_gel <- function(perc_agarose, total_ml, sample_num){
+  cat("Make sure to prep a gel with combs for", sample_num+2, "samples with bp ladder.\n")
+  grams <- (perc_agarose * total_ml)
+  cat("To prep the agarose, add", grams, "grams to", total_ml, "mls of 1X TAE. Microwave to dissolve into solution. Let cool, add SYBR safe, and pour with combs.\n\n")
+  water <- 2 * (sample_num + 2)
+  dye <- 1 * (sample_num + 2)
+  cat("Make a solution of", water, "µls of water and", dye, "µls of loading dye. Add 3 µls on top of parafilm (label with sample numbers) and mix ontop of parafilm with 2µls of your PCR amplicon.\n Add 5µl of this to each well in the gel.")
+}
+run_gel(0.01, 75, 35)
+```
+
+# AMPure bead clean-up
+```{r}
+bead_clean <- function(sample_num, etoh_perc){
+  total_ul <- sample_num * 400
+  in_ml <- total_ul/1000
+  cat("You need", in_ml, "mls of EtOH to wash all samples.\n")
+  # (cv)=(cv)
+  vol_etoh <- etoh_perc * total_ul
+  cat("Add", vol_etoh, "µls to", (total_ul-vol_etoh), "µl of water, or\n",
+      "add", (vol_etoh)/1000, "mls to", (total_ul-vol_etoh)/1000, "ml of water.")
+}
+bead_clean(16, 0.8)
+```
+
 
 # Sequencing calculations
 
