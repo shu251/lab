@@ -138,7 +138,7 @@ run_gel <- function(perc_agarose, total_ml, sample_num){
   dye <- 1 * (sample_num + 2)
   cat("Make a solution of", water, "µls of water and", dye, "µls of loading dye. Add 3 µls on top of parafilm (label with sample numbers) and mix ontop of parafilm with 2µls of your PCR amplicon.\n Add 5µl of this to each well in the gel.")
 }
-run_gel(0.01, 75, 35)
+run_gel(0.01, 75, 25)
 ```
 
 # AMPure bead clean-up
@@ -152,7 +152,7 @@ bead_clean <- function(sample_num, etoh_perc){
   cat("Add", vol_etoh, "µls to", (total_ul-vol_etoh), "µl of water, or\n",
       "add", (vol_etoh)/1000, "mls to", (total_ul-vol_etoh)/1000, "ml of water.")
 }
-bead_clean(16, 0.8)
+bead_clean(5, 0.8)
 ```
 
 
@@ -221,3 +221,82 @@ seq_calc <- function(million_user, ended, length, sample_num, billion_seq, lanes
 seq_calc(100, 2, 150, 20, 2, 4, "NovaSeq")
 seq_calc(200, 2, 150, 58, 2, 4, "NovaSeq")
 ```
+
+# Qubit math
+```{r}
+n <- 4
+# Make sure to include x2 for standards
+```
+
+```{r}
+buffer <- 199
+reagent <- 1
+
+cat("Add", (buffer*(n)),"µl of buffer and", (reagent*n), "µl of reagent for relevant kit.\n\n",
+    "For 2 standards, use 190µl of working solution and 10µl of standards.\n\n", "For each sample, use 198µl of working solution + 2µl of sample.")
+```
+
+
+# NEB Ultra II Directional RNA library prep
+```{r}
+library(tidyverse)
+```
+Indicate number of samples for library prep.
+```{r}
+n <- 4
+```
+
+
+## First Strand Reaction Buffer and Random Primer Mix
+```{r}
+NEB_Next_1st <- 8
+Ran_pri <- 2
+h2o <- 10
+
+total <- NEB_Next_1st + Ran_pri + h2o
+
+
+cat("Main mix:\n", ((NEB_Next_1st)*(n)), "µl of NEB Next 1st Strand Syn Rxn Buffer\n",
+    (Ran_pri*n), "µl of Random primers\n",
+    (h2o*n), "Nuclease-free water\n\n", "Use this working solution to elute mRNA from beads, add 11.5µl to each samples. ")
+```
+
+## mRNA isolation bead step
+```{r}
+oligo_beads <- 20
+RNA_bind_buff <- 100
+total <- oligo_beads+RNA_bind_buff
+
+cat("Main mix:\n", 
+    (oligo_beads*n), "µl Oligo dT Beads d(T)25\n",
+    (RNA_bind_buff*n), "µl RNA Binding Buffer x2\n",
+    "Add above to 1.5ml tube.\nWash beads by pipetting up and down x6.\n Place on magnet.\n For RNA Binding Buffer wash, add", (100*n), "µl to the 1.5 ml tube and mix.\n\nFor final step, add", (50*n), "µl of RNA Binding Buffer to the 1.5 ml tube.\n Outcome is beads that have been washed.")
+
+```
+
+# First Strand cDNA synthesis
+```{r}
+NEB_Next_reagent <- 8
+NEB_Next_Enzyme <- 2
+
+cat("Main mix:\n", ((NEB_Next_reagent)*(n)), "µl of NEBNext Strand Specificity Reagent\n",
+    (NEB_Next_Enzyme*n), "µl of NEBNext 1st Strand Synthesis Enzyme Mix\n",
+    "ON ICE, add 10 µl to all mRNA samples (which should all be 10µl at this point too)")
+```
+
+# Second Strand cDNA synthesis
+```{r}
+NEB_Next_2nd_reagent <- 8
+NEB_Next_2_ndEnzyme <- 4
+h2o <- 48
+
+cat("Main mix:\n", ((NEB_Next_2nd_reagent)*(n)), "µl of NEBNext 2nd Strand Synthesis Rxn Buffer with dUTP Mix\n",
+    (NEB_Next_2_ndEnzyme*n), "µl of NEBNext 2nd Strand synthesis Enzyme mix\n",
+    (h2o*n), "µl of Nuclease-free water.\n",
+    "ON ICE, add 60 µl to all 1st strand synthesis products (which should all be 20 µl at this point too)")
+```
+
+```{r}
+
+```
+
