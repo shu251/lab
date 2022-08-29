@@ -32,7 +32,7 @@ etoh <- function(ml, percent){
   vol_h20 <- ml - vol_etoh
   cat("Prep", percent, "% EtOH by adding", vol_h20, "ml water +", vol_etoh, "ml of 100% ethanol.")
 }
-etoh(10, 70)
+etoh(2, 80)
 ```
 
 
@@ -294,9 +294,25 @@ cat("Main mix:\n", ((NEB_Next_2nd_reagent)*(n)), "µl of NEBNext 2nd Strand Synt
     (NEB_Next_2_ndEnzyme*n), "µl of NEBNext 2nd Strand synthesis Enzyme mix\n",
     (h2o*n), "µl of Nuclease-free water.\n",
     "ON ICE, add 60 µl to all 1st strand synthesis products (which should all be 20 µl at this point too)")
+
+# NEB_Next_2_ndEnzyme + NEB_Next_2nd_reagent+ h2o
 ```
 
+# Sequencing library prep
+Calculate molarity nM
 ```{r}
+#ng/µl * 1,000,000 / (insert size) * 660 = nM
+
+# conc must be in ng/ul
+
+molarity_lib <- function(insert, conc){
+  nM <- ((conc)*1000000)/((insert)*660)
+  cat(nM, "nM")
+}
+
+# if concentration is in pg/µl multiply by 0.001
+
+molarity_lib(438, (0.001*2053.73))
 
 ```
 
