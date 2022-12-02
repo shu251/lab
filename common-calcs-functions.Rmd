@@ -19,11 +19,11 @@ rlt_beta <- function(sample_num, buffer_ml){
   beta <- (total_needed * 10)
   cat("Prep RLT by adding", beta, "µl of beta-mercaptoethanol to", total_needed, "mL of RLT.")
 }
-rlt_beta(8, 1)
+rlt_beta(5, 2)
 # 1.5 * 8
 # 5+8
 ```
-
+## EtOH
 ```{r}
 # CV=CV EtOH
 # Assumes you start with 100% EtOH
@@ -32,7 +32,7 @@ etoh <- function(ml, percent){
   vol_h20 <- ml - vol_etoh
   cat("Prep", percent, "% EtOH by adding", vol_h20, "ml water +", vol_etoh, "ml of 100% ethanol.")
 }
-etoh(2, 80)
+etoh(500, 70)
 ```
 
 
@@ -45,10 +45,10 @@ DNase <- function(sample_num, error){
   cat("This is enough master mix for", sample_num, "samples, and totals to", 
       total, "µls in volume. Add 80 µl to each RNase column membrane.")
 }
-DNase(6, 0.01)
+DNase(8, 0.01)
 # 488/6
-
-550/81
+# 550/81
+# 480.8/80
 ```
 
 
@@ -121,8 +121,8 @@ PCR_master_mix <- function(sample_num, err, desired_conc, desired_vol){
   cat("Otherwise, add 15µl of master mix to each tube. Then add 10µl total of water and input template DNA so total reaction volume is 25µl\n\n")
   # CV=CV
 }
-
-PCR_master_mix(18, 0.01, 1, 5) #0.01 = 1% error
+# arguments: sample_num, err, desired_conc, desired_vol
+PCR_master_mix(4, 0.01, 1, 5) #0.01 = 1% error
 ```
 
 Prep gel and PCR products to run.
@@ -224,7 +224,7 @@ seq_calc(200, 2, 150, 58, 2, 4, "NovaSeq")
 
 # Qubit math
 ```{r}
-n <- 4
+n <- 10
 # Make sure to include x2 for standards
 ```
 
@@ -238,12 +238,10 @@ cat("Add", (buffer*(n)),"µl of buffer and", (reagent*n), "µl of reagent for re
 
 
 # NEB Ultra II Directional RNA library prep
-```{r}
-library(tidyverse)
-```
+
 Indicate number of samples for library prep.
 ```{r}
-n <- 4
+n <- 16
 ```
 
 
@@ -274,17 +272,7 @@ cat("Main mix:\n",
 
 ```
 
-# First Strand cDNA synthesis
-```{r}
-NEB_Next_reagent <- 8
-NEB_Next_Enzyme <- 2
-
-cat("Main mix:\n", ((NEB_Next_reagent)*(n)), "µl of NEBNext Strand Specificity Reagent\n",
-    (NEB_Next_Enzyme*n), "µl of NEBNext 1st Strand Synthesis Enzyme Mix\n",
-    "ON ICE, add 10 µl to all mRNA samples (which should all be 10µl at this point too)")
-```
-
-# Second Strand cDNA synthesis
+## Second Strand cDNA synthesis
 ```{r}
 NEB_Next_2nd_reagent <- 8
 NEB_Next_2_ndEnzyme <- 4
@@ -298,8 +286,74 @@ cat("Main mix:\n", ((NEB_Next_2nd_reagent)*(n)), "µl of NEBNext 2nd Strand Synt
 # NEB_Next_2_ndEnzyme + NEB_Next_2nd_reagent+ h2o
 ```
 
+## Adapter ligation step
+```{r}
+NEB_Ligation_enhancer <- 1
+NEB_Ligation_MasterMix <- 30
+
+cat("First, make up adapter dilution with Adapter Dilution BUffer and NEBNext Adapter. Keep this on ice. For 100-fold, add 1µl of adapter to 99µl of dilution buffer.\n\n","Mix Ligation enhancer and master mix ahead of time:\n", ((NEB_Ligation_enhancer)*(n)), "µl of NEBNext NEBNext Ligation Adapter\n",
+    (NEB_Ligation_MasterMix*n), "µl of NEBNext Ligation Master Mix\n",
+    "To each sample (prepped DNA), add 2.5 µl of adapter dilution. Then, add 31 µl of ligation mix to each reaction")
+```
+
+# Ovation Nugen DNA library kit
+
+```{r}
+# Number of samples
+n <- 12
+```
+
+For whole protocol, there are several 70% EtOH washes.
+```{r}
+total_etoh <- (200 * 8)
+
+cat("Will need a total of:\n", ((total_etoh)*(n)), "µl of 70% EtOH\n",
+    ((total_etoh)*(n))/1000, "ml")
+```
+
+Table 3 in protocol - End Repair Master Mix
+```{r}
+ER1 <- 3.5
+ER2 <- 0.5
+ER3 <- 1.0
+nPLUS <- 0.2 + n
+cat("End repair master mix:\n", 
+    ((nPLUS)*(ER1)), "µl of ER1 - End Repair Buffer Mix\n",
+    ((nPLUS)*(ER2)), "µl of ER2 - End Repair Enzyme Mix\n",
+    ((nPLUS)*(ER3)), "µl of ER3 - End Repair Enhancer\n",
+        (((nPLUS)*(ER1))+((nPLUS)*(ER2))+((nPLUS)*(ER3))), "µl total vol\n\nAdd 5µl to each reaction")
+```
+Table 4 - Ligation
+```{r}
+D1 <- 1.5
+L1 <- 6.0
+L3 <- 1.5
+nPLUS <- 0.2 + n
+cat("Ligation master mix:\n", 
+    ((nPLUS)*(D1)), "µl of D1 - water\n",
+    ((nPLUS)*(L1)), "µl of L1 - Ligation buffer Mix\n",
+    ((nPLUS)*(L3)), "µl of L3 - Ligation enzyme mix\n",
+        (((nPLUS)*(D1))+((nPLUS)*(L1))+((nPLUS)*(L3))), "µl total vol\n\nAdd 9µl to each reaction")
+
+```
+
+Library amplification
+```{r}
+P1 <- 12.75
+P2 <- 1.25
+P3 <- 1.0
+nPLUS <- 0.2 + n
+cat("Ligation master mix:\n", 
+    ((nPLUS)*(P1)), "µl of P1 - Amp Buffer Mix\n",
+    ((nPLUS)*(P2)), "µl of P2 - Amp primer mix\n",
+    ((nPLUS)*(P3)), "µl of P3 - Amp enzyme mix\n",
+        (((nPLUS)*(P1))+((nPLUS)*(P2))+((nPLUS)*(P3))), "µl total vol\n\nAdd 15 µl to each reaction")
+```
+
+
 # Sequencing library prep
 Calculate molarity nM
+## Molarity calculation
 ```{r}
 #ng/µl * 1,000,000 / (insert size) * 660 = nM
 
@@ -312,7 +366,13 @@ molarity_lib <- function(insert, conc){
 
 # if concentration is in pg/µl multiply by 0.001
 
-molarity_lib(438, (0.001*2053.73))
+# molarity_lib(438, (0.001*2053.73))
 
+
+molarity_lib(424.87, (0.001*925.53))
+# sample 3, 1ng of mRNA
+# molarity_lib(349.8, (0.001*2152.72))
+
+molarity_lib(425, 3.49)
 ```
 
